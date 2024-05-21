@@ -19,6 +19,12 @@
 #include<cmath>
 #include <sys/resource.h>
 
+#ifdef WITH_MPI
+
+#include <mpi.h>
+
+#endif
+
 #include "libmess/mess.hh"
 #include "libmess/key.hh"
 #include "libmess/units.hh"
@@ -52,7 +58,13 @@ int main (int argc, char* argv [])
     }
   }
 
-    
+  #ifdef WITH_MPI
+  
+  MPI::Init(argc, argv);
+
+  IO::mpi_rank = MPI::COMM_WORLD.Get_rank();
+
+  #endif
   
   int                 itemp;
   double              dtemp;
@@ -2208,5 +2220,13 @@ int main (int argc, char* argv [])
     }// pressure cycle
   }
 
+#ifdef WITH_MPI
+
+  MPI::COMM_WORLD.Barrier();
+
+  MPI::Finalize();
+  
+#endif
+  
   return 0;
 }
