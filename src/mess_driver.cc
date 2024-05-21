@@ -19,10 +19,10 @@
 #include<cmath>
 #include <sys/resource.h>
 
-#include "mess.hh"
-#include "key.hh"
-#include "units.hh"
-#include "io.hh"
+#include "libmess/mess.hh"
+#include "libmess/key.hh"
+#include "libmess/units.hh"
+#include "libmess/io.hh"
 
 int main (int argc, char* argv [])
 {
@@ -68,7 +68,9 @@ int main (int argc, char* argv [])
 
   Key    model_key("Model"                      );
   Key prec_out_key("OutPrecision"               );
+  Key prec_ped_key("PedPrecision"               );
   Key prec_log_key("LogPrecision"               );
+  Key prec_num_key("NumericPrecision"           );
   Key bar_pres_key("PressureList[bar]"          );
   Key tor_pres_key("PressureList[torr]"         );
   Key atm_pres_key("PressureList[atm]"          );
@@ -86,6 +88,7 @@ int main (int argc, char* argv [])
   Key well_ext_key("WellExtension"              );
   Key ext_corr_key("ExtensionCorrection"        );
   Key eval_max_key("ChemicalEigenvalueMax"      );
+  Key chem_trs_key("ChemicalThreshold"          );
   Key eval_min_key("ChemicalEigenvalueMin"      );
   Key well_red_key("WellReductionThreshold"     );
   Key    float_key("FloatType"                  );
@@ -114,6 +117,7 @@ int main (int argc, char* argv [])
   Key mic_step_key("MicroEnerStep[kcal/mol]"    );
   Key tim_evol_key("TimeEvolution"              );
   Key       sl_key("StateLandscape"             );
+  Key save_mat_key("SaveKineticMatrix"          );
 
   std::vector<std::string> ped_spec;// product energy distribution pairs verbal
   std::vector<std::string> reduction_scheme;
@@ -158,6 +162,8 @@ int main (int argc, char* argv [])
   IO::aux.open((base_name + ".aux").c_str());
   
   std::string token, comment, line;
+
+  int prec_num = 0;
   
   while(from >> token) {
     //
@@ -268,6 +274,50 @@ int main (int argc, char* argv [])
 
       Model::log_precision = itemp;
     }
+    // calculation precision
+    //
+    else if(prec_num_key == token) {
+      //
+      IO::LineInput lin(from);
+
+      if(!(lin >> itemp)) {
+	//
+	std::cerr << funame << token << ": corrupted\n";
+
+	throw Error::Input();
+      }
+
+      if(itemp < 16) {
+	//
+	std::cerr << funame << token << ": out of range (>15): " << itemp << "\n";
+
+	throw Error::Range();
+      }
+
+      prec_num = itemp;
+    }
+    // ped stream precision
+    //
+    else if(prec_ped_key == token) {
+      //
+      IO::LineInput lin(from);
+
+      if(!(lin >> itemp)) {
+	//
+	std::cerr << funame << token << ": corrupted\n";
+
+	throw Error::Input();
+      }
+
+      if(itemp < 2 || itemp > 6) {
+	//
+	std::cerr << funame << token << ": out of range[2-6]: " << itemp << "\n";
+
+	throw Error::Range();
+      }
+
+      Model::ped_precision = itemp;
+    }
     // rate output
     //
     else if(rate_out_key == token) {
@@ -330,19 +380,27 @@ int main (int argc, char* argv [])
     // eigenvalue output
     //
     else if(eval_out_key == token) {
+      //
       if(MasterEquation::eval_out.is_open()) {
+	//
         std::cerr << funame << token << ": allready opened\n";
+	
         throw Error::Init();
       }      
       if(!(from >> stemp)) {
+	//
         std::cerr << funame << token << ": corrupted\n";
+	
         throw Error::Input();
       }
       std::getline(from, comment);
 
       MasterEquation::eval_out.open(stemp.c_str());
+      
       if(!MasterEquation::eval_out) {
+	//
         std::cerr << funame << token << ": cannot open " << stemp << " file\n";
+	
         throw Error::Input();
       }
     }
@@ -401,85 +459,130 @@ int main (int argc, char* argv [])
 	
 	throw Error::Open();
       }
-      
     }
     // reactants and products for product energy distribution output
+    //
     else if(ped_spec_key == token) {
+      //
       IO::LineInput ped_input(from);
+      
       while(ped_input >> stemp)
+	//
 	ped_spec.push_back(stemp);
     }
     // bimolecular reactant to be used as a reference
+    //
     else if(react_key == token) {
+      //
       if(!(from >> Model::reactant)) {
+	//
 	std::cerr << funame << token << ": corrupted\n";
+	
 	throw Error::Input();
       }
+      
       std::getline(from, comment);      
     }
     // eigenvector number to output
+    //
     else if(evec_num_key == token) {
+      //
       if(!(from >> MasterEquation::evec_out_num)) {
+	//
         std::cerr << funame << token << ": corrupted\n";
+	
         throw Error::Input();
       }
+      
       std::getline(from, comment);
 
       if(MasterEquation::evec_out_num < 0) {
+	//
         std::cerr << funame << token << ": out of range\n";
+	
         throw Error::Range();
       }
     }
     // temperature
+    //
     else if(temp_key == token) {
+      //
       if(temperature.size()) {
+	//
 	std::cerr << funame << token <<  ": already initialized\n";
+	
 	throw Error::Init();
       }
+      
       IO::LineInput data_input(from);
+      
       std::set<double> data;
+      
       while(data_input >> dtemp) {
+	//
 	if(dtemp <= 0.) {
+	  //
 	  std::cerr << funame << token << ": should be positive\n";
+	  
 	  throw Error::Range();
 	}
+	
 	data.insert( dtemp * Phys_const::kelv);
       }
       
       if(!data.size()) {
+	//
         std::cerr << funame << token << ": no data\n";
+	
         throw Error::Init();
       }
 
       for(std::set<double>::const_iterator it = data.begin(); it != data.end(); ++it)
+	//
 	temperature.push_back(*it);
     }
     // pressure
+    //
     else if(bar_pres_key == token || tor_pres_key == token || atm_pres_key == token) {
+      //
       if(pressure.size()) {
+	//
 	std::cerr << funame << token << ": already initialized\n";
+	
 	throw Error::Init();
       }
 
       IO::LineInput data_input(from);
+      
       std::set<double> data;
 
       while(data_input >> dtemp) {
+	//
 	if(dtemp <= 0.) {
+	  //
 	  std::cerr << funame << token << ": should be positive\n";
+	  
 	  throw Error::Range();
 	}
 
 	if(bar_pres_key == token) {
+	  //
 	  dtemp *= Phys_const::bar;
+	  
 	  MasterEquation::pressure_unit = MasterEquation::BAR;
 	}
+	
 	if(atm_pres_key == token) {
+	  //
 	  dtemp *= Phys_const::atm;
+	  
 	  MasterEquation::pressure_unit = MasterEquation::ATM;
 	}
+	
 	if(tor_pres_key == token) {
+	  //
 	  dtemp *= Phys_const::tor;
+	  
 	  MasterEquation::pressure_unit = MasterEquation::TORR;
 	}
 
@@ -487,11 +590,14 @@ int main (int argc, char* argv [])
       }
 
       if(!data.size()) {
+	//
         std::cerr << funame << token << ": no data\n";
+	
         throw Error::Init();
       }
 
       for(std::set<double>::const_iterator it = data.begin(); it != data.end(); ++it)
+	//
 	pressure.push_back(*it);
     }
     // energy step over temperature
@@ -590,6 +696,7 @@ int main (int argc, char* argv [])
       Model::set_energy_limit(dtemp * Phys_const::kcal);
     }
     // minimal interatomic distance
+    //
     else if(adm_bor_key == token || adm_ang_key == token) {
       if(!(from >> dtemp)) {
         std::cerr << funame << token << ": corrupted\n";
@@ -650,6 +757,7 @@ int main (int argc, char* argv [])
       }
     }
     // microcanonical rate limit
+    //
     else if(rate_max_key == token) {
       if(!(from >> MasterEquation::rate_max)) {
         std::cerr << funame << token << ": corrupted\n";
@@ -744,9 +852,9 @@ int main (int argc, char* argv [])
     //
     else if(float_key == token) {
       //
-#ifndef WITH_MPACK
+#if not defined(WITH_MPACK) && not defined(WITH_MPLAPACK)
 
-      std::cerr << funame << token << ": to use multiple precision the code should be compiled with WITH_MPACK macro defined\n";
+      std::cerr << funame << token << ": to use multiple precision the code should be compiled with WITH_MPACK or WITH_MPLAPACK macro defined\n";
 
       throw Error::Logic();
       
@@ -773,24 +881,54 @@ int main (int argc, char* argv [])
 	//
 	MasterEquation::float_type = MasterEquation::QD;
       }
+      else if(stemp == "mpfr") {
+	//
+	MasterEquation::float_type = MasterEquation::MPFR;
+      }
+      else if(stemp == "gmp") {
+	//
+	MasterEquation::float_type = MasterEquation::GMP;
+      }
+      else if(stemp == "float128") {
+	//
+	MasterEquation::float_type = MasterEquation::FLOAT128;
+      }
+      else if(stemp == "float64x") {
+	//
+	MasterEquation::float_type = MasterEquation::FLOAT64X;
+      }
       else {
 	//
-	std::cerr << funame << token << ": unknown type: " << stemp << ": available types: double (default), dd, qd\n";
+	std::cerr << funame << token << ": unknown type: " << stemp << ": available types: double (default), dd, qd, mpfr, gmp, float128, float64x\n";
 
 	throw Error::Init();
       }
     }
-    // maximal chemical eigenvalue
+    // save kinetic matrix
     //
-    else if(eval_max_key == token) {
+    else if(save_mat_key == token) {
       //
-      if(!(from >> MasterEquation::chemical_threshold)) {
+      IO::LineInput lin(from);
+      
+      if(!(lin >> MasterEquation::save_kinetic_matrix)) {
+	//
+	MasterEquation::save_kinetic_matrix = base_name + ".skm";
+      }
+
+      std::remove(MasterEquation::save_kinetic_matrix.c_str());
+    }
+    // maximal chemical eigenvalue a.k.a. chemical threshold
+    //
+    else if(eval_max_key == token || chem_trs_key == token) {
+      //
+      IO::LineInput lin(from);
+      
+      if(!(lin >> MasterEquation::chemical_threshold)) {
 	//
         std::cerr << funame << token << ": corrupted\n";
 	
         throw Error::Input();
       }
-      std::getline(from, comment);
     }
     // minumal chemical eigenvalue
     //
@@ -1033,8 +1171,11 @@ int main (int argc, char* argv [])
     // microscopic rate energy minimum
     //
     else if(mic_emin_key == token) {
+      //
       if(!(from >> micro_ener_min)) {
+	//
 	std::cerr << funame << token << ": corrupted\n";
+	
 	throw Error::Input();
       }
 
@@ -1042,42 +1183,68 @@ int main (int argc, char* argv [])
     }
     // microscopic rate energy step
     else if(mic_step_key == token) {
+      //
       if(!(from >> micro_ener_step)) {
+	//
 	std::cerr << funame << token << ": corrupted\n";
+	
 	throw Error::Input();
       }
 
       micro_ener_step *= Phys_const::kcal;
     }
     // time evolution
+    //
     else if(tim_evol_key == token) {
+      //
       if(Model::time_evolution) {
+	//
 	std::cerr << funame << token << ": already initialized\n";
+	
 	throw Error::Input();
       }
+      
       Model::time_evolution.init(new Model::TimeEvolution(from));
     }
     // state landscape output
+    //
     else if(sl_key == token) {
+      //
       if(state_landscape.size()) {
+	//
 	std::cerr << funame << token << ": already initialized\n";
+	
 	throw Error::Init();
       }
       
       IO::LineInput lin(from);
+      
       if(!(lin >> state_landscape)) {
+	//
 	std::cerr << funame << token << ": corrupted\n";
+	
 	throw Error::Input();
       }
     }
     // unknown keyword
+    //
     else if(IO::skip_comment(token, from)) {
+      //
       std::cerr << funame << "unknown keyword " << token << "\n";
+      
       Key::show_all(std::cerr);
+      
       std::cerr << "\n";
+      
       throw Error::Init();
     }
   }
+
+  if(prec_num)
+    //
+    MasterEquation::set_precision(prec_num);
+  
+  IO::log << IO::log_offset << "numeric precision: digits10 = " << MasterEquation::get_precision() << "\n";
 
   /*************************** CHECKING ******************************************/
 
@@ -1120,9 +1287,12 @@ int main (int argc, char* argv [])
     //
     MasterEquation::set_ped_pair(ped_spec);
 
-  if(MasterEquation::ped_out.is_open())
+  if(MasterEquation::ped_out.is_open()) {
     //
+    MasterEquation::ped_out << std::setprecision(Model::ped_precision);
+    
     Model::names_translation(MasterEquation::ped_out);
+  }
   
   /************************** MICROSCOPIC RATE COEFFICIENTS **********************************/
 

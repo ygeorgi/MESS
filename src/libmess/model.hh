@@ -31,6 +31,7 @@
 #include "math.hh"
 #include "io.hh"
 #include "system.hh"
+#include "dynlib.hh"
 
 namespace Model {
 
@@ -40,6 +41,8 @@ namespace Model {
   extern int log_precision;
 
   extern int out_precision;
+
+  extern int ped_precision;
 
   extern bool use_short_names;
 
@@ -793,7 +796,15 @@ namespace Model {
 
     // TST levels
     //
-    enum {T_LEVEL, E_LEVEL, EJ_LEVEL};
+    enum {T_LEVEL, E_LEVEL, EJ_LEVEL, J0_LEVEL};
+
+    // J=0 Number of States
+    //
+    Slatec::Spline _j0_nos;
+
+    // maximal energy
+    //
+    double _ener_max;
     
   public:
     //
@@ -956,6 +967,7 @@ namespace Model {
     std::map<int, Lapack::complex>             _ctf_complex_fourier;
 
     // fourier expansion for potential and vibrational frequencies
+    //
     MultiIndexConvert                 _pot_four_index; // potential fourier expansion dimensions
 
     std::map<int, double>                   _pot_four; //           potential fourier expansion
@@ -1335,7 +1347,7 @@ namespace Model {
     //
     class _RefPot {
 
-      System::DynLib _lib;
+      DynLib _lib; // dl library interface
 
       refp_t _pot;
 
@@ -1345,7 +1357,7 @@ namespace Model {
 
       _RefPot () : _pot(0), _weight(0) {}
 
-      void init (std::istream&);
+      void init (std::istream&); // dl library interface
 
       // energy as a function of fluxional coordinates
       //
@@ -1363,7 +1375,7 @@ namespace Model {
     // reference potential
     //
     _RefPot _ref_pot;
-
+    
     // reference temperature
     //
     double  _ref_tem;
@@ -1960,6 +1972,8 @@ namespace Model {
     _assert_spec();
     
     _species->shift_ground(e);
+
+    dissociation_limit += e;
 
     for(int i = 0; i < _escape.size(); ++i)
       //

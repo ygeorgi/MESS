@@ -25,10 +25,11 @@
 #include "lapack.hh"
 #include "model.hh"
 
-#ifdef WITH_MPACK
+#if defined(WITH_MPACK) || defined(WITH_MPLAPACK)
 
 #include "mpack.hh"
 #include "mpack_dd.hh"
+#include "mplapack_dd.hh"
 
 #define FLOAT  dd_real
 #define LAPACK Mpack_dd
@@ -51,10 +52,13 @@ namespace MasterEquation {
   class Partition;
 
   // eigenvector and eigenvalue output
+  //
   extern std::ofstream eval_out;// eigenvalues output
   extern std::ofstream evec_out;// eigenvalues output
   extern int           evec_out_num;// number of relaxation eigenvalues to print
 
+  extern std::string save_kinetic_matrix;
+  
   // pressure units
   //
   enum {TORR, BAR, ATM};
@@ -65,10 +69,14 @@ namespace MasterEquation {
   
   // float type
   //
-  enum {DOUBLE, DD, QD};
+  enum {DOUBLE, DD, QD, MPFR, GMP, FLOAT128, FLOAT64X};
 
   extern int float_type;
   
+  int get_precision ();
+
+  void set_precision (int);
+
   // reduction of species
   //
   enum {DIAGONALIZATION, PROJECTION}; // possible reduction algorithms for low eigenvalue method
@@ -505,7 +513,7 @@ namespace MasterEquation {
     double minimal_relaxation_eigenvalue () const { return       _min_relax_eval; }
     double maximal_relaxation_eigenvalue () const { return       _max_relax_eval; }
 
-    int             crm_size ()             const { return      _crm_basis.size2(); }
+    int             crm_size ()             const { return      size() - 1;         }
     const double&  crm_basis (int i, int j) const { return      _crm_basis(i, j);   }
     double           crm_bra (int i, int j) const { return      _crm_bra(i, j);     }
     const double* crm_column (int i)        const { return     &_crm_basis(0, i);   }

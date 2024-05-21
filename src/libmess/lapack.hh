@@ -25,7 +25,7 @@
 
 namespace Lapack {
 
-  typedef int int_t;// index type in lapack & blas libraries
+  typedef int int_t;
 
   typedef std::complex<double> complex;
 
@@ -159,6 +159,7 @@ namespace Lapack {
    ****************************************************************/
 
   // Fortran style indexing
+  //
   class Matrix : private RefArr<double> {
     //
     SharedPointer<int_t> _size1;
@@ -187,6 +188,8 @@ namespace Lapack {
 
     Matrix copy () const { return Matrix(*this, 0); }
 
+    Matrix& operator= (const SymmetricMatrix&);
+    
     Matrix (const SymmetricMatrix& m);
     
     const double&  operator() (int_t, int_t) const ;
@@ -464,11 +467,15 @@ namespace Lapack {
    ****************************************************************/
 
   // packed symmetric matrix with upper triangle reference
+  //
   class SymmetricMatrix : private RefArr<double> {
+    //
     SharedPointer<int_t> _size;
+    
     explicit SymmetricMatrix (const SymmetricMatrix&, int_t); // copy constructor by value
 
   public:
+    //
     void resize (int_t) ;
 
     bool isinit () const { return _size; }
@@ -799,13 +806,15 @@ namespace Lapack {
   int_t parity (RefArr<int_t>);
 
   class LU : private Matrix {
-    RefArr<int_t> _ipiv;
+    //
+    ::RefArr<int_t> _ipiv;
 
   public:
+    //
     explicit LU (const Matrix&) ;
     
     int_t size ()            const { return Matrix::size1(); }
-    RefArr<int_t> ipiv ()  const { return _ipiv.copy(); }
+    ::RefArr<int_t> ipiv ()  const { return _ipiv.copy(); }
     double det ()          const;
 
     Matrix invert ()              const ; // inverse matrix
@@ -817,9 +826,11 @@ namespace Lapack {
    ******* LU Factorization for symmetric packed matrices *********
    ****************************************************************/
   class SymLU : private SymmetricMatrix {
-    RefArr<int_t> _ipiv;
+    //
+    ::RefArr<int_t> _ipiv;
 
   public:
+    //
     explicit SymLU (const SymmetricMatrix&) ;
     int_t size () const { return SymmetricMatrix::size(); }
     double det () const;

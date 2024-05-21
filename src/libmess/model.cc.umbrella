@@ -28,7 +28,7 @@ namespace Model {
   std::vector<std::vector<int> > population (double ener, const std::vector<double>& freq, int = 0); 
 }
 
-double  Model::energy_limit () throw(Error::General) 
+double  Model::energy_limit ()  
 {
   const char funame [] = "Model::energy_limit: ";
 
@@ -44,7 +44,7 @@ double  Model::energy_limit () throw(Error::General)
  ******************************************** READERS ***************************************
  ********************************************************************************************/
 
-SharedPointer<Model::Collision> Model::new_collision(std::istream& from) throw(Error::General) 
+SharedPointer<Model::Collision> Model::new_collision(std::istream& from)  
 {
   const char funame [] = "Model::new_collision: ";
 
@@ -72,7 +72,7 @@ SharedPointer<Model::Collision> Model::new_collision(std::istream& from) throw(E
   throw Error::Init();
 }
 
-SharedPointer<Model::Kernel> Model::new_kernel(std::istream& from) throw(Error::General) 
+SharedPointer<Model::Kernel> Model::new_kernel(std::istream& from)  
 {
   const char funame [] = "Model::new_kernel: ";
 
@@ -101,7 +101,7 @@ SharedPointer<Model::Kernel> Model::new_kernel(std::istream& from) throw(Error::
 }
 
 SharedPointer<Model::RotorBase> Model::new_rotor(std::istream& from, const std::vector<Atom>& atom) 
-  throw(Error::General) 
+   
 {
   const char funame [] = "Model::new_rotor: ";
 
@@ -133,7 +133,7 @@ SharedPointer<Model::RotorBase> Model::new_rotor(std::istream& from, const std::
 }
 
 SharedPointer<Model::Tunnel> Model::new_tunnel(std::istream& from) 
-  throw(Error::General) 
+   
 {
   const char funame [] = "Model::new_tunnel: ";
 
@@ -166,7 +166,7 @@ SharedPointer<Model::Tunnel> Model::new_tunnel(std::istream& from)
 }
 
 SharedPointer<Model::Fragment> Model::new_fragment(std::istream& from) 
-  throw(Error::General) 
+   
 {
   const char funame [] = "Model::new_fragment: ";
 
@@ -199,7 +199,7 @@ SharedPointer<Model::Fragment> Model::new_fragment(std::istream& from)
 }
 
 SharedPointer<Model::Core> Model::new_core(std::istream& from, int mode) 
-  throw(Error::General) 
+   
 {
   const char funame [] = "Model::new_core: ";
 
@@ -234,7 +234,7 @@ SharedPointer<Model::Core> Model::new_core(std::istream& from, int mode)
   throw Error::Init();
 }
 
-SharedPointer<Model::Well> Model::new_well(std::istream& from) throw(Error::General) 
+SharedPointer<Model::Well> Model::new_well(std::istream& from)  
 {
   const char funame [] = "Model::new_well: ";
 
@@ -286,7 +286,7 @@ SharedPointer<Model::Well> Model::new_well(std::istream& from) throw(Error::Gene
   throw Error::Init();
 }
 
-SharedPointer<Model::Barrier> Model::new_barrier(std::istream& from) throw(Error::General) 
+SharedPointer<Model::Barrier> Model::new_barrier(std::istream& from)  
 {
   const char funame [] = "Model::new_barrier: ";
 
@@ -338,7 +338,7 @@ SharedPointer<Model::Barrier> Model::new_barrier(std::istream& from) throw(Error
   throw Error::Init();
 }
 
-SharedPointer<Model::Bimolecular> Model::new_bimolecular(std::istream& from) throw(Error::General) 
+SharedPointer<Model::Bimolecular> Model::new_bimolecular(std::istream& from)  
 {
   return SharedPointer<Bimolecular>(new Bimolecular(from));
 }
@@ -358,7 +358,7 @@ Model::LennardJonesCollision::~LennardJonesCollision ()
   IO::log << IO::log_offset << "Model::LennardJonesCollision destroyed\n";
 }
 
-Model::LennardJonesCollision::LennardJonesCollision(std::istream& from) throw(Error::General)
+Model::LennardJonesCollision::LennardJonesCollision(std::istream& from) 
   : _frequency_factor(std::sqrt(8. * M_PI))
 {
   const char funame [] = "Model::LennardJonesCollision::LennardJonesCollision: ";
@@ -507,7 +507,7 @@ Model::ExponentialKernel::~ExponentialKernel ()
   IO::log << IO::log_offset << "Model::ExponentialKernel destroyed\n";
 }
 
-Model::ExponentialKernel::ExponentialKernel(std::istream& from) throw(Error::General)
+Model::ExponentialKernel::ExponentialKernel(std::istream& from) 
   : _factor(-1.), _power(-1.), _cutoff(10.), _type(0)
 {
   const char funame [] = "Model::ExponentialKernel::ExponentialKernel : ";
@@ -679,7 +679,7 @@ void Model::shift_cm_to_zero(std::vector<Atom>& atom)
     *at -= vtemp;
 }
 
-Model::InternalMotion::InternalMotion (std::istream& from) throw(Error::General)
+Model::InternalMotion::InternalMotion (std::istream& from) 
   :_qmin_size(0), _qmax_size(0), _disc_size(0)
 {
   const char funame [] = "Model::InternalMotion::InternalMotion: ";
@@ -831,7 +831,7 @@ Model::InternalMotion::InternalMotion (std::istream& from) throw(Error::General)
 
 // remove overall rotation & translation from the normal mode
 void Model::InternalMotion::adjust (const std::vector<Atom>& atom, std::vector<D3::Vector>& res) 
-  throw(Error::General)
+  
 {
   const char funame [] = "Model::InternalMotion::adjust: ";
 
@@ -868,7 +868,7 @@ void Model::InternalMotion::adjust (const std::vector<Atom>& atom, std::vector<D
 }
 
 void Model::InternalMotion::set_axis (const std::vector<Atom>& atom, D3::Vector& dir, D3::Vector& ref) const
-  throw(Error::General)
+  
 {
   const char funame [] = "Model::InternalMotion::set_axis: ";
 
@@ -911,7 +911,7 @@ void Model::InternalMotion::set_axis (const std::vector<Atom>& atom, D3::Vector&
  ******************************* INTERNAL ROTATION DEFINITION *******************************
  ********************************************************************************************/
 
-Model::InternalRotation::InternalRotation (std::istream& from) throw(Error::General)
+Model::InternalRotation::InternalRotation (std::istream& from) 
    : InternalMotion(from), _symmetry(1), _msize(0)
 {
   const char funame [] = "Model::InternalRotation::InternalRotation: ";
@@ -984,7 +984,7 @@ Model::InternalRotation::InternalRotation (std::istream& from) throw(Error::Gene
 
 // rotating internal group around internal axis 
 std::vector<Atom> Model::InternalRotation::rotate (const std::vector<Atom>& atom, double angle) const
-  throw(Error::General)
+  
 {
   const char funame [] = "Model::InternalRotation::rotate: ";
 
@@ -1019,7 +1019,7 @@ std::vector<Atom> Model::InternalRotation::rotate (const std::vector<Atom>& atom
 }
 
 std::vector<D3::Vector> Model::InternalRotation::normal_mode (const std::vector<Atom>& atom) const
-  throw(Error::General)
+  
 {
   const char funame [] = "Model::InternalRotation::normal_mode: ";
 
@@ -1052,7 +1052,7 @@ std::vector<D3::Vector> Model::InternalRotation::normal_mode (const std::vector<
  ********************************** UMBRELLA MODE DEFINITION ********************************
  ********************************************************************************************/
 
-Model::UmbrellaMode::UmbrellaMode (std::istream& from) throw(Error::General)
+Model::UmbrellaMode::UmbrellaMode (std::istream& from) 
   : InternalMotion(from), _range(-1.)
 {
   const char funame [] = "Model::UmbrellaMode::UmbrellaMode: ";
@@ -1121,7 +1121,7 @@ Model::UmbrellaMode::UmbrellaMode (std::istream& from) throw(Error::General)
 }
 
 std::vector<D3::Vector> Model::UmbrellaMode::normal_mode (const std::vector<Atom>& atom) const
-  throw(Error::General)
+  
 {
   const char funame [] = "Model::UmbrellaMode::normal_mode: ";
 
@@ -1160,7 +1160,7 @@ Model::Tunnel::~Tunnel ()
   IO::log << IO::log_offset << "Model::Tunnel destroyed\n";
 }
 
-Model::Tunnel::Tunnel (std::istream& from) throw(Error::General)
+Model::Tunnel::Tunnel (std::istream& from) 
 {
   const char funame [] = "Model::Tunnel::Tunnel : ";
 
@@ -1203,7 +1203,7 @@ Model::HarmonicTunnel::~HarmonicTunnel ()
   IO::log << IO::log_offset << "Model::HarmonicTunnel destroyed\n";
 }
 
-Model::HarmonicTunnel::HarmonicTunnel (std::istream& from) throw(Error::General)
+Model::HarmonicTunnel::HarmonicTunnel (std::istream& from) 
   : Tunnel(from), _freq(-1.)
 {
   const char funame [] = "Model::HarmonicTunnel::HarmonicTunnel: ";
@@ -1335,7 +1335,7 @@ Model::EckartTunnel::~EckartTunnel ()
   IO::log << IO::log_offset << "Model::EckartTunnel destroyed\n";
 }
 
-Model::EckartTunnel::EckartTunnel (std::istream& from) throw(Error::General)
+Model::EckartTunnel::EckartTunnel (std::istream& from) 
   : Tunnel(from)
 {
   const char funame [] = "Model::EckartTunnel::EckartTunnel: ";
@@ -1449,7 +1449,7 @@ Model::EckartTunnel::EckartTunnel (std::istream& from) throw(Error::General)
   IO::log << IO::log_offset << funame << "done\n";
 }
 
-double Model::EckartTunnel::_factor (double ener, const double* rpar) throw(Error::General)
+double Model::EckartTunnel::_factor (double ener, const double* rpar) 
 {
   const char funame [] = "Model::EckartTunnel::_factor: ";
   
@@ -1555,7 +1555,7 @@ Model::RigidRotor::~RigidRotor ()
   IO::log << IO::log_offset << "Model::RigidRotor destroyed\n";
 }
 
-Model::RigidRotor::RigidRotor(std::istream& from, int mode) throw(Error::General)
+Model::RigidRotor::RigidRotor(std::istream& from, int mode) 
   : _factor(1.), _rdim(0), _mass(-1.)
 {
   const char funame [] = "Model::RigidRotor::RigidRotor: ";
@@ -1786,7 +1786,7 @@ Model::Rotd::~Rotd ()
   IO::log << IO::log_offset << "Model::Rotd destroyed\n";
 }
 
-Model::Rotd::Rotd(std::istream& from, int mode) throw(Error::General)
+Model::Rotd::Rotd(std::istream& from, int mode) 
   : _mass(-1.)
 {
   const char funame [] = "Model::Rotd::Rotd : ";
@@ -2025,7 +2025,7 @@ Model::MultiRotor::~MultiRotor ()
   IO::log << IO::log_offset << "Model::MultiRotor destroyed\n";
 }
 
-Model::MultiRotor::MultiRotor(std::istream& from, int mode) throw(Error::General)
+Model::MultiRotor::MultiRotor(std::istream& from, int mode) 
   : _external_symmetry(1.), _vib_num(0), _is_ext_rot(true), _method(QUANTUM),
     _expol_emin(-1.), _expol_emax(-1.), _expol_incr(-1.), _zpe_num(0.)
 {
@@ -3403,7 +3403,7 @@ Model::MultiRotor::MultiRotor(std::istream& from, int mode) throw(Error::General
 
 // local frequencies
 Lapack::Vector Model::MultiRotor::frequencies (const std::vector<double>& angle) const
-  throw(Error::General)
+  
 {
   const char funame [] = "Model::MultiRotor::frequencies: ";
 
@@ -3443,7 +3443,7 @@ Lapack::Vector Model::MultiRotor::frequencies (const std::vector<double>& angle)
 
 // generalized mass matrix
 Lapack::SymmetricMatrix Model::MultiRotor::mass (const std::vector<double>& angle) const
-  throw(Error::General)
+  
 {
   const char funame [] = "Model::MultiRotor::mass: ";
 
@@ -3479,7 +3479,7 @@ Lapack::SymmetricMatrix Model::MultiRotor::mass (const std::vector<double>& angl
 
 // external rotation inertia moments product
 double Model::MultiRotor::external_rotation_factor (const std::vector<double>& angle) const
-  throw(Error::General)
+  
 {
   const char funame [] = "Model::MultiRotor::external_rotation_factor: ";
 
@@ -3509,7 +3509,7 @@ double Model::MultiRotor::external_rotation_factor (const std::vector<double>& a
 
 // vibrational frequencies
 Lapack::Vector  Model::MultiRotor::vibration (const std::vector<double>& angle) const
-  throw(Error::General)
+  
 {
   const char funame [] = "Model::MultiRotor::vibration: ";
 
@@ -3546,7 +3546,7 @@ Lapack::Vector  Model::MultiRotor::vibration (const std::vector<double>& angle) 
 
 // derivatives of the potential
 double Model::MultiRotor::potential (const std::vector<double>& angle, const std::vector<int>& der)
-  const throw(Error::General)
+  const 
 {
   const char funame [] = "Model::MultiRotor::potential: ";
 
@@ -3682,7 +3682,7 @@ int Model::MultiRotor::get_weight (double temperature, double& cw, double& qw) c
 }
 
 // quantum number/density of states
-double Model::MultiRotor::quantum_states (int mode, double energy) const throw(Error::General)
+double Model::MultiRotor::quantum_states (int mode, double energy) const 
 {
   const char funame [] = "Model::MultiRotor::quantum_states: ";
 
@@ -3733,7 +3733,7 @@ double Model::MultiRotor::quantum_states (int mode, double energy) const throw(E
 }
 
 // classical number/density of states
-double Model::MultiRotor::classical_states (int mode, double energy) const throw(Error::General)
+double Model::MultiRotor::classical_states (int mode, double energy) const 
 {
   const char funame [] = "Model::MultiRotor::classical_states: ";
 
@@ -3793,7 +3793,7 @@ double Model::MultiRotor::classical_states (int mode, double energy) const throw
 }
 
 // number/density of states
-double Model::MultiRotor::states (int mode, double energy) const throw(Error::General)
+double Model::MultiRotor::states (int mode, double energy) const 
 {
   energy += _ground;
 
@@ -3938,7 +3938,7 @@ Model::HinderedRotor::~HinderedRotor ()
   IO::log << IO::log_offset << "Model::HinderedRotor destroyed\n";
 }
 
-Model::RotorBase::RotorBase (std::istream& from, std::vector<Atom> atom) throw(Error::General)
+Model::RotorBase::RotorBase (std::istream& from, std::vector<Atom> atom) 
   : _symmetry(1), _rotational_constant(-1.)
 {
   const char funame [] = "Model::RotorBase::RotorBase: ";
@@ -4272,7 +4272,7 @@ Model::RotorBase::RotorBase (std::istream& from, std::vector<Atom> atom) throw(E
  **************************************** FREE ROTOR ****************************************
  ********************************************************************************************/
 
-Model::FreeRotor::FreeRotor (std::istream& from, const std::vector<Atom>& atom) throw(Error::General)
+Model::FreeRotor::FreeRotor (std::istream& from, const std::vector<Atom>& atom) 
   : RotorBase(from, atom), _ground(0.), _level_size(1)
 {
   const char funame [] = "Model::FreeRotor::FreeRotor: ";
@@ -4384,7 +4384,7 @@ int Model::FreeRotor::states_number (double ener) const
  ********************************************************************************************/
 
 Model::HinderedRotorBase::HinderedRotorBase (std::istream& from, const std::vector<Atom>& atom)
-  throw(Error::General)
+  
   : RotorBase(from, atom), _htol(1.e-3), _iszero(false)
 {
   const char funame [] = "Model::HinderedRotorBase::HinderedRotorBase: ";
@@ -4604,7 +4604,7 @@ double Model::HinderedRotorBase::potential (double angle, int der) const
  ********************************** QUANTUM HINDERED ROTOR **********************************
  ********************************************************************************************/
 
-Model::HinderedRotor::HinderedRotor (std::istream& from, const std::vector<Atom>& atom) throw(Error::General)
+Model::HinderedRotor::HinderedRotor (std::istream& from, const std::vector<Atom>& atom) 
   : HinderedRotorBase(from, atom), _ham_size_min(99), _ham_size_max(999), _grid_size(100), _level_size_min(10), 
     _wtol(1.e-5), _etol(Phys_const::incm), _spac_aver_size(2)
 {
@@ -4942,7 +4942,7 @@ void  Model::HinderedRotor::set_energy_levels (double emax)
   IO::log << IO::log_offset << funame << "done\n";
 }
 
-void Model::HinderedRotor::_set_quantum_levels (Lapack::Vector el) throw(Error::General)
+void Model::HinderedRotor::_set_quantum_levels (Lapack::Vector el) 
 {
   const char funame [] = "Model::HinderedRotor::_set_quantum_levels: ";
 
@@ -5281,7 +5281,7 @@ Model::ReadBase::~ReadBase ()
   IO::log << IO::log_offset << "Model::ReadBase destroyed\n";
 }
 
-Model::ReadBase::ReadBase (std::istream& from) throw(Error::General)
+Model::ReadBase::ReadBase (std::istream& from) 
   : _etol(1.e-10), _dtol(1.)
 {
   const char funame [] = "Model::ReadBase::ReadBase:";
@@ -5396,7 +5396,7 @@ double Model::ReadBase::weight (double temperature) const
 
 /************************* MULTIPLE COUPLED ROTORS WELL MODEL **************************/
 
-Model::RRHO::RRHO(std::istream& from, int mode) throw(Error::General)
+Model::RRHO::RRHO(std::istream& from, int mode) 
   : _eps(0.01), _quantum(Phys_const::incm)
 {
   const char funame [] = "Model::RRHO::RRHO: ";
@@ -5805,7 +5805,7 @@ Model::UnionWell::~UnionWell ()
   IO::log << IO::log_offset << "Model::UnionWell destroyed\n";
 }
 
-Model::UnionWell::UnionWell (std::istream& from) throw(Error::General)
+Model::UnionWell::UnionWell (std::istream& from) 
 {
   const char funame [] = "Model::UnionWell::UnionWell: ";
 
@@ -5914,7 +5914,7 @@ Model::UnionBarrier::~UnionBarrier ()
   IO::log << IO::log_offset << "Model::UnionBarrier destroyed\n";
 }
 
-Model::UnionBarrier::UnionBarrier (std::istream& from) throw(Error::General)
+Model::UnionBarrier::UnionBarrier (std::istream& from) 
 {
   const char funame [] = "Model::UnionBarrier::UnionBarrier: ";
 
@@ -6025,7 +6025,7 @@ Model::AtomicFragment::~AtomicFragment ()
   IO::log << IO::log_offset << "Model::AtomicFragment destroyed\n";
 }
 
-Model::AtomicFragment::AtomicFragment (std::istream& from) throw(Error::General)
+Model::AtomicFragment::AtomicFragment (std::istream& from) 
   : _mass(-1.)
 {
   const char funame [] = "Model::AtomicFragment::AtomicFragment: ";
@@ -6162,7 +6162,7 @@ Model::Bimolecular::~Bimolecular ()
   IO::log << IO::log_offset << "Model::Bimolecular destroyed\n";
 }
 
-Model::Bimolecular::Bimolecular(std::istream& from) throw(Error::General)
+Model::Bimolecular::Bimolecular(std::istream& from) 
   : _dummy(false)
 {
   const char funame [] = "Model::Bimolecular::Bimolecular : ";

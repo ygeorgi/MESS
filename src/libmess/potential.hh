@@ -19,6 +19,7 @@
 #include "dynamic.hh"
 #include "io.hh"
 #include "system.hh"
+#include "dynlib.hh"
 
 namespace Potential {
 
@@ -143,13 +144,13 @@ namespace Potential {
 
   class Analytic : public Base
   {
-    System::DynLib  _pot_libr;
+    DynLib	    _pot_libr;
     ener_t          _pot_ener;
     init_t          _pot_init;
     Array<double>   _pot_rpar;
     Array<int>      _pot_ipar;
 
-    System::DynLib _corr_libr;
+    DynLib	   _corr_libr;
     ener_t         _corr_ener;
     init_t         _corr_init;
     Array<double>  _corr_rpar;

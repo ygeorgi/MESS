@@ -90,64 +90,6 @@ namespace System {
 	void free (int) const ; // free n-th semaphore  (V, signal)
     };
 
-    /*********************************************************************************************
-     *                                     Dynamic Libraries                                     *
-     ********************************************************************************************/
-
-    class DynLib : public IO::Read {
-	std::string _lib;
-	void* _handle;
-	int*  _count;
-
-	void _delete_ref ();
-	void _create_ref (const DynLib& dl);
-
-    public:
-	void open (const std::string&) ;
-
-	DynLib () : _handle(0), _count(0) {}
-	explicit DynLib (const std::string& lib)  
-	    : _handle(0), _count(0) { open(lib); }
-
-	DynLib (const DynLib& dl) { _create_ref(dl); }
-	DynLib& operator= (const DynLib& dl) { _delete_ref(); _create_ref(dl); return *this; }
-
-	virtual ~DynLib () { _delete_ref(); }
-	virtual void read (std::istream&) ;
-	
-	bool isopen () const;
-	void* member (const std::string&) ;
-    };
-
-    inline bool DynLib::isopen () const
-    {
-	if(_handle)
-	    return true;
-	return false;
-    }
-
-    inline void DynLib::read (std::istream& from) 
-    {
-	const char funame [] = "System::DynLib::read: ";
-    
-	std::string lib;
-	from >> lib;
-	if(!from) {
-	    std::cerr << funame << "input stream is corrupted\n";
-	    throw Error::Form();
-	}
-	open(lib);
-    }
-
-    inline void DynLib::_create_ref (const DynLib& dl)
-    { 
-	_handle = dl._handle;
-	_count = dl._count;
-	_lib = dl._lib;
-	if(_count)
-	    ++(*_count); 
-    }
- 
 }// System
 
 #endif

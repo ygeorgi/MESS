@@ -227,7 +227,7 @@ int main (int argc, char* argv [])
 	err_out << funame << token << ": out of range: " << itemp;
       }
 
-      Thermo::Species::count_max = itemp;
+      Thermo::CSpec::count_max = itemp;
     }
     // importance sampling number to thermolize
     //
@@ -249,7 +249,7 @@ int main (int argc, char* argv [])
 	err_out << funame << token << ": out of range: " << itemp;
       }
 
-      Thermo::Species::count_min = itemp;
+      Thermo::CSpec::count_min = itemp;
     }
     // maximal potential expansion order
     //
@@ -293,7 +293,7 @@ int main (int argc, char* argv [])
 	err_out << funame << token << ": out of range: " << dtemp;
       }
 
-      Thermo::Species::numd_step = dtemp;
+      Thermo::CSpec::numd_step = dtemp;
     }
     // importance sampling step (bohr)
     //
@@ -315,7 +315,7 @@ int main (int argc, char* argv [])
 	err_out << funame << token << ": out of range: " << dtemp;
       }
 
-      Thermo::Species::samp_step = dtemp;
+      Thermo::CSpec::samp_step = dtemp;
     }
     // qfactor low frequency threshold
     //
@@ -337,7 +337,7 @@ int main (int argc, char* argv [])
 	err_out << funame << token << ": out of range: " << dtemp;
       }
 
-      Thermo::Species::low_freq_thresh = dtemp;
+      Thermo::QFactor::low_freq_thresh = dtemp;
     }
     // qfactor high frequency threshold
     //
@@ -359,7 +359,7 @@ int main (int argc, char* argv [])
 	err_out << funame << token << ": out of range: " << dtemp;
       }
 
-      Thermo::Species::high_freq_thresh = dtemp;
+      Thermo::QFactor::high_freq_thresh = dtemp;
     }
     // frequency tolerance
     //

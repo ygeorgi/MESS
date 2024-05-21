@@ -230,18 +230,19 @@ Lapack::Vector Lapack::Matrix::eigenvalues (Matrix* evec) const
   return res;
 }
 
-Lapack::Matrix::Matrix (const SymmetricMatrix& m)
+Lapack::Matrix& Lapack::Matrix::operator= (const SymmetricMatrix& m)
 {
-  const char funame [] = "Lapack::Matrix::Matrix: ";
+  const char funame [] = "Lapack::Matrix::operator=(const SymmetricMatrix&): ";
 
-  if(!m.isinit())
+  if(!m.isinit()) {
     //
-    return;
+    std::cerr << funame << "not initialized\n";
+
+    throw Error::Lapack();
+  }
 
   resize(m.size());
-
-  double dtemp;
-
+  
   int n = m.size() * m.size();
 
 #pragma omp parallel for default(shared)  schedule(static)
@@ -254,6 +255,19 @@ Lapack::Matrix::Matrix (const SymmetricMatrix& m)
 
     (*this)(i, j) = m(i, j);
   }
+
+  return *this;
+}
+
+Lapack::Matrix::Matrix (const SymmetricMatrix& m)
+{
+  const char funame [] = "Lapack::Matrix::Matrix: ";
+
+  if(!m.isinit())
+    //
+    return;
+
+  *this = m;
 }
 
 Lapack::Matrix Lapack::Matrix::transpose () const
@@ -945,10 +959,118 @@ Lapack::Vector Lapack::SymmetricMatrix::eigenvalues (Matrix* evec)
   const char funame [] = "Lapack::SymmetricMatrix::eigenvalues: ";
 
   if(!isinit()) {
+    //
     std::cerr << funame << "not initialized\n";
+    
     throw Error::Init();
   }
 
+  Matrix a;
+  
+  char jobz = 'N';
+  
+  if(evec) {
+    //
+    a = *evec;
+    
+    jobz = 'V';
+  }
+  else
+    //
+    a.resize(size());
+
+  a = *this;
+  
+  Vector res(size());
+
+  int_t lwork, liwork, info = 0;
+
+  //work space query
+  //
+  lwork = -1;
+
+  liwork = -1;
+
+  Array<double> work(1);
+
+  Array<int_t> iwork(1);
+
+#ifdef __INTEL_LLVM_COMPILER
+
+  double* a_pointer = a;
+
+  double* w_pointer = res;
+
+  int* info_pointer = &info;
+
+  double*  work_pointer = work;
+
+  int*     iwork_pointer = iwork;
+  
+#pragma omp target data map(tofrom : a_pointer[0 : size() * size()], w_pointer[0 : size()], info_pointer[0 : 1], work_pointer[0 : 1], iwork_pointer[0 : 1])
+  
+   {
+     
+#pragma omp target variant dispatch use_device_ptr(a_pointer, w_pointer, info_pointer, work_pointer, iwork_pointer)
+     
+     dsyevd_(jobz, 'U', size(), a, size(), res, work, lwork, iwork, liwork, info);
+   }
+   
+#else
+   
+  dsyevd_(jobz, 'U', size(), a, size(), res, work, lwork, iwork, liwork, info);
+  
+#endif
+  
+  // matrix diagonalization
+  //
+  lwork = (int_t)work[0];
+
+  work.resize(lwork);
+
+  liwork = iwork[0];
+  
+  iwork.resize(liwork);
+  
+#ifdef __INTEL_LLVM_COMPILER
+  
+  work_pointer = work;
+
+  iwork_pointer = iwork;
+  
+#pragma omp target data map(tofrom : a_pointer[0 : size() * size()], w_pointer[0 : size()], info_pointer[0 : 1], work_pointer[0 : lwork], iwork_pointer[0 : liwork])
+  
+   {
+     
+#pragma omp target variant dispatch use_device_ptr(a_pointer, w_pointer, info_pointer, work_pointer, iwork_pointer)
+     
+     dsyevd_(jobz, 'U', size(), a, size(), res, work, lwork, iwork, liwork, info);
+   }
+   
+#else
+   
+  dsyevd_(jobz, 'U', size(), a, size(), res, work, lwork, iwork, liwork, info);
+  
+#endif
+  
+  if(info < 0) {
+    //
+    std::cerr << funame << "dsyevd: " << -info << "-th argument has illegal value\n";
+
+    throw Error::Logic();
+  }
+  else if(info > 0) {
+    //
+    std::cerr << funame << "dsyevd: " << info 
+       //
+              << "-th off-diagonal  elements  of intermediate tridiagonal form did not converge to zero\n";
+
+    throw Error::Lapack();
+  }
+
+  return res;
+  
+  /*
   SymmetricMatrix sm = copy();
   Vector res(size());
   Vector work(3 * size());
@@ -987,6 +1109,7 @@ Lapack::Vector Lapack::SymmetricMatrix::eigenvalues (Matrix* evec)
     
     throw Error::Lapack();
   }
+  */
 }
 
 Lapack::SymmetricMatrix Lapack::SymmetricMatrix::invert () const 

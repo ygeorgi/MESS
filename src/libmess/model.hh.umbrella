@@ -15,7 +15,7 @@ namespace Model {
   enum {DENSITY, NUMBER, NONE};// calculated properties
 
   // maximum energy to be used
-  double  energy_limit () throw(Error::General);
+  double  energy_limit () ;
   void set_energy_limit (double);
 
   /********************************************************************************************
@@ -31,16 +31,16 @@ namespace Model {
   class Tunnel;
   class Fragment;
 
-  SharedPointer<Collision>   new_collision      (std::istream&) throw(Error::General);
-  SharedPointer<Kernel>      new_kernel         (std::istream&) throw(Error::General);
-  SharedPointer<Well>        new_well           (std::istream&) throw(Error::General);
-  SharedPointer<Barrier>     new_barrier        (std::istream&) throw(Error::General);
-  SharedPointer<Bimolecular> new_bimolecular    (std::istream&) throw(Error::General);
+  SharedPointer<Collision>   new_collision      (std::istream&) ;
+  SharedPointer<Kernel>      new_kernel         (std::istream&) ;
+  SharedPointer<Well>        new_well           (std::istream&) ;
+  SharedPointer<Barrier>     new_barrier        (std::istream&) ;
+  SharedPointer<Bimolecular> new_bimolecular    (std::istream&) ;
   SharedPointer<RotorBase>   new_rotor          (std::istream&, const std::vector<Atom>& = std::vector<Atom>())
-    throw(Error::General);
-  SharedPointer<Core>        new_core           (std::istream&, int) throw(Error::General);
-  SharedPointer<Tunnel>      new_tunnel         (std::istream&) throw(Error::General);
-  SharedPointer<Fragment>    new_fragment       (std::istream&) throw(Error::General);
+    ;
+  SharedPointer<Core>        new_core           (std::istream&, int) ;
+  SharedPointer<Tunnel>      new_tunnel         (std::istream&) ;
+  SharedPointer<Fragment>    new_fragment       (std::istream&) ;
 
 
   /********************************************************************************************
@@ -60,7 +60,7 @@ namespace Model {
 
     double _omega_22_star (double) const;
   public:
-    LennardJonesCollision (std::istream&) throw(Error::General);
+    LennardJonesCollision (std::istream&) ;
     ~LennardJonesCollision ();
 
     double operator () (double) const;
@@ -95,7 +95,7 @@ namespace Model {
     double _energy_down (double temperature) const;
   public:
 
-    ExponentialKernel (std::istream&) throw(Error::General);
+    ExponentialKernel (std::istream&) ;
     ~ExponentialKernel ();
 
     double operator () (double, double) const;
@@ -114,7 +114,7 @@ namespace Model {
   protected:
     std::string last_key;
 
-    RotorBase (std::istream&, std::vector<Atom>) throw(Error::General);
+    RotorBase (std::istream&, std::vector<Atom>) ;
 
   public:
     virtual ~RotorBase ();
@@ -139,7 +139,7 @@ namespace Model {
     bool           _iszero; // Energy zero at global potential minimum
 
   protected:
-    HinderedRotorBase (std::istream&, const std::vector<Atom>&) throw(Error::General);
+    HinderedRotorBase (std::istream&, const std::vector<Atom>&) ;
 
     bool   iszero            ()       const { return _iszero; }
     double fourier_expansion (int i)  const { return _fourier_expansion[i]; }
@@ -157,7 +157,7 @@ namespace Model {
     int _level_size;
 
   public:
-    FreeRotor (std::istream&, const std::vector<Atom>&) throw(Error::General);
+    FreeRotor (std::istream&, const std::vector<Atom>&) ;
     ~FreeRotor ();
 
     double ground        ()       const;
@@ -182,7 +182,7 @@ namespace Model {
     int            _semiclassical_states_number  (double energy) const;// absolute energy
     Lapack::Vector _momentum_space_energy_levels (int ham_size)  const;
     Lapack::Vector _real_space_energy_levels     ()              const;
-    void           _set_quantum_levels           (Lapack::Vector) throw(Error::General);
+    void           _set_quantum_levels           (Lapack::Vector) ;
     void           _add_semiclassical_level      ();
 
     std::vector<double> _pot;       // potential-on-the-grid
@@ -203,7 +203,7 @@ namespace Model {
     int    _spac_aver_size;// spacing averaging size
 
   public: 
-    HinderedRotor (std::istream&, const std::vector<Atom>&) throw(Error::General);
+    HinderedRotor (std::istream&, const std::vector<Atom>&) ;
     ~HinderedRotor ();
 
     double ground        ()       const;
@@ -227,7 +227,7 @@ namespace Model {
     static double _max_exp_pow; // maximum exponent power
 
   public:
-    Tunnel(std::istream&) throw(Error::General);
+    Tunnel(std::istream&) ;
     virtual ~Tunnel ();
 
     double  cutoff_energy () const { return      _cutoff; }
@@ -249,7 +249,7 @@ namespace Model {
     static void _integrant (const double&, const double*, double*, void*, void*); 
 
   public:
-    HarmonicTunnel(std::istream&) throw(Error::General);
+    HarmonicTunnel(std::istream&) ;
     ~HarmonicTunnel ();
 
     double factor (double) const;
@@ -263,11 +263,11 @@ namespace Model {
   class EckartTunnel: public Tunnel {
     mutable double _rpar[6];
 
-    static double _factor (double, const double*) throw(Error::General);
+    static double _factor (double, const double*) ;
     static void _integrant (const double&, const double*, double*, void*, void*); 
 
   public:
-    EckartTunnel(std::istream&) throw(Error::General);
+    EckartTunnel(std::istream&) ;
     ~EckartTunnel ();
 
     double factor (double) const;
@@ -301,7 +301,7 @@ namespace Model {
     double            _mass;
 
   public:
-    RigidRotor (std::istream&, int) throw(Error::General);
+    RigidRotor (std::istream&, int) ;
     ~RigidRotor ();
 
     double ground       () const;
@@ -328,7 +328,7 @@ namespace Model {
     double              _rotd_nmax, _rotd_amax;
 
   public:
-    Rotd (std::istream&, int) throw(Error::General);
+    Rotd (std::istream&, int) ;
     ~Rotd ();
 
     double ground       () const;
@@ -355,14 +355,14 @@ namespace Model {
     std::string last_key;
 
   public:
-    InternalMotion (std::istream&) throw (Error::General);
+    InternalMotion (std::istream&) ;
 
-    virtual std::vector<D3::Vector> normal_mode (const std::vector<Atom>&) const throw(Error::General) =0;
+    virtual std::vector<D3::Vector> normal_mode (const std::vector<Atom>&) const  =0;
 
     void set_axis (const std::vector<Atom>& atom, D3::Vector& normal, D3::Vector& ref) const
-      throw(Error::General);
+      ;
 
-    static void adjust (const std::vector<Atom>&, std::vector<D3::Vector>&) throw(Error::General);
+    static void adjust (const std::vector<Atom>&, std::vector<D3::Vector>&) ;
 
     int  quantum_size_min    () const { return _qmin_size; }
     int  quantum_size_max    () const { return _qmax_size; }
@@ -378,10 +378,10 @@ namespace Model {
     int    _msize;      // generalized mass sampling size
 
   public:
-    InternalRotation (std::istream&) throw(Error::General);
+    InternalRotation (std::istream&) ;
 
-    std::vector<D3::Vector> normal_mode (const std::vector<Atom>& atom) const throw(Error::General);
-    std::vector<Atom> rotate (const std::vector<Atom>& atom, double angle) const throw(Error::General);
+    std::vector<D3::Vector> normal_mode (const std::vector<Atom>& atom) const ;
+    std::vector<Atom> rotate (const std::vector<Atom>& atom, double angle) const ;
 
     int           symmetry () const { return _symmetry; }
     int mass_sampling_size () const { return _msize;    }
@@ -394,9 +394,9 @@ namespace Model {
     double             _range;
 
   public:
-    UmbrellaMode (std::istream&) throw(Error::General);
+    UmbrellaMode (std::istream&) ;
 
-    std::vector<D3::Vector> normal_mode (const std::vector<Atom>& atom) const throw(Error::General);
+    std::vector<D3::Vector> normal_mode (const std::vector<Atom>& atom) const ;
 
     int    grid_size      () const { return _grid.size(); }
     double grid_point(int i) const { return _grid[i];     }
@@ -464,7 +464,7 @@ namespace Model {
 
   public:
     
-    MultiRotor(std::istream&, int = DENSITY) throw(Error::General);
+    MultiRotor(std::istream&, int = DENSITY) ;
     ~MultiRotor();
 
     int     internal_size ()      const { return _internal_rotation.size() + _umbrellla_mode.size(); }
@@ -472,18 +472,18 @@ namespace Model {
     int external_symmetry ()      const { return _external_symmetry; }
 
     double potential (const std::vector<double>& angle, 
-		      const std::vector<int>& der =std::vector<int>()) const throw(Error::General);
-    Lapack::Vector      frequencies (const std::vector<double>& angle) const throw(Error::General);
-    Lapack::SymmetricMatrix    mass (const std::vector<double>& angle) const throw(Error::General);
-    Lapack::Vector        vibration (const std::vector<double>& angle) const throw(Error::General);
-    double external_rotation_factor (const std::vector<double>& angle) const throw(Error::General);
+		      const std::vector<int>& der =std::vector<int>()) const ;
+    Lapack::Vector      frequencies (const std::vector<double>& angle) const ;
+    Lapack::SymmetricMatrix    mass (const std::vector<double>& angle) const ;
+    Lapack::Vector        vibration (const std::vector<double>& angle) const ;
+    double external_rotation_factor (const std::vector<double>& angle) const ;
  
     // statistical weights
     double   quantum_weight (double temperature) const;
     int          get_weight (double temperature, double& cw, double& pw) const;      // classical & path integral weights
-    double classical_states (int mode, double energy)  const throw(Error::General); // absoulte energy
-    double   quantum_states (int mode, double energy)  const throw(Error::General); // absolute energy
-    double           states (int mode, double energy)  const throw(Error::General); // energy relative to the ground level
+    double classical_states (int mode, double energy)  const ; // absoulte energy
+    double   quantum_states (int mode, double energy)  const ; // absolute energy
+    double           states (int mode, double energy)  const ; // energy relative to the ground level
 
     // virtual functions
     double ground       () const;
@@ -530,7 +530,7 @@ namespace Model {
     Slatec::Spline _states;
 
   public:
-    RRHO (std::istream&, int) throw(Error::General);
+    RRHO (std::istream&, int) ;
 
     double ground       () const { return _ground; }
     double states (double) const;
@@ -543,7 +543,7 @@ namespace Model {
   class RRHO_Well : public Well, public RRHO {
 
   public:
-    RRHO_Well (std::istream& from)  throw(Error::General) : RRHO(from, DENSITY) {}
+    RRHO_Well (std::istream& from)   : RRHO(from, DENSITY) {}
     ~RRHO_Well ();
 
     double depth         ()       const;
@@ -568,7 +568,7 @@ namespace Model {
     
 
   public:
-    ReadBase (std::istream&) throw(Error::General);
+    ReadBase (std::istream&) ;
     ~ReadBase ();
 
     double ground       () const { return _ground; }
@@ -578,7 +578,7 @@ namespace Model {
   
   class ReadWell : public ReadBase, public Well {
   public:
-    ReadWell (std::istream& from) throw(Error::General) : ReadBase(from) {}
+    ReadWell (std::istream& from)  : ReadBase(from) {}
     ~ReadWell ();
 
     double depth                    () const;
@@ -595,7 +595,7 @@ namespace Model {
     typedef std::vector<SharedPointer<Well> >::const_iterator _Cit;
 
   public:
-    UnionWell  (std::istream&) throw(Error::General);
+    UnionWell  (std::istream&) ;
     ~UnionWell ();
 
     double depth         ()       const;
@@ -621,7 +621,7 @@ namespace Model {
 
   class RRHO_Barrier : public Barrier, public RRHO {
   public:
-    RRHO_Barrier (std::istream& from) throw(Error::General) : RRHO(from, NUMBER) {}
+    RRHO_Barrier (std::istream& from)  : RRHO(from, NUMBER) {}
     ~RRHO_Barrier ();
 
     double height       ()       const;
@@ -634,7 +634,7 @@ namespace Model {
   
   class ReadBarrier : public ReadBase, public Barrier {
   public:
-    ReadBarrier (std::istream& from) throw(Error::General) : ReadBase(from) {}
+    ReadBarrier (std::istream& from)  : ReadBase(from) {}
     ~ReadBarrier ();
 
     double height                   () const;
@@ -651,7 +651,7 @@ namespace Model {
     typedef std::vector<SharedPointer<Barrier> >::const_iterator _Cit;
 
   public:
-    UnionBarrier  (std::istream&) throw(Error::General);
+    UnionBarrier  (std::istream&) ;
     ~UnionBarrier ();
 
     double height             () const;
@@ -683,7 +683,7 @@ namespace Model {
     std::vector<int>                      _edegen; // electronic level degeneracies
 
   public:
-    AtomicFragment(std::istream& from) throw(Error::General);
+    AtomicFragment(std::istream& from) ;
     ~AtomicFragment ();
 
     double ground       () const;
@@ -697,7 +697,7 @@ namespace Model {
 
   class RRHO_Fragment : public Fragment, public RRHO {
   public:
-    RRHO_Fragment(std::istream& from) throw(Error::General) : RRHO(from, NONE) {}
+    RRHO_Fragment(std::istream& from)  : RRHO(from, NONE) {}
     ~RRHO_Fragment ();
 
     double ground       () const;
@@ -717,7 +717,7 @@ namespace Model {
     double _ground;
 
   public:
-    Bimolecular (std::istream&) throw(Error::General);
+    Bimolecular (std::istream&) ;
     ~Bimolecular ();
 
     // ground energy
